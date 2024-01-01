@@ -24,3 +24,13 @@ const db = mongoose
 
 app.use("/user", fetch);
 app.use("/adduser", auth);
+
+app.use((err, req, res, next) => {
+  const message = err.message || "Server error";
+  const status = err.status || 500;
+  return res.status(status).json({
+    success: false,
+    message,
+    status,
+  });
+});

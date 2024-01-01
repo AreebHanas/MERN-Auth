@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 
-export const addUser = async (req, res) => {
+export const addUser = async (req, res, next) => {
   const { username, email, password } = req.body;
   const hashPassword = bcryptjs.hashSync(password, 10);
   const newUser = new User({ username, email, password: hashPassword });
@@ -10,7 +10,8 @@ export const addUser = async (req, res) => {
     res.status(201).json({ message: "User added successfully" });
     console.log("User added successfully");
   } catch (error) {
-    console.log("Can not add the user : ", error);
-    res.status(404).json({ message: "Can not add the user" });
+    // console.log("Can not add the user : ", error);
+    // res.status(500).json({ message: "Can not add the user" });
+    next(error);
   }
 };
