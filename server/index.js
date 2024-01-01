@@ -1,8 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import fetch from "./routes/user.route.js";
-import auth from "./routes/auth.route.js";
+import { signinRoute, signupRoute } from "./routes/auth.route.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -24,8 +23,8 @@ const db = mongoose
     console.log("Can not connect to the data base ", error);
   });
 
-app.use("/user", fetch);
-app.use("/adduser", auth);
+app.use("/api", signupRoute);
+app.use("/api", signinRoute);
 
 app.use((err, req, res, next) => {
   const message = err.message || "Server error";

@@ -1,8 +1,7 @@
 import express from "express";
-import { addUser } from "../controllers/auth.controller.js";
+import { addUser, signin } from "../controllers/auth.controller.js";
 
 const route = express.Router();
 
-route.post("/api", addUser);
-
-export default route;
+export const signupRoute = route.post("/adduser", addUser);
+export const signinRoute = route.post("/validation", signin);

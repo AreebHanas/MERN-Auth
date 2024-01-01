@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-
+//Test API
 export const fetch = async (req, res) => {
   try {
     const users = await User.find();
