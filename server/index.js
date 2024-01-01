@@ -4,9 +4,11 @@ import dotenv from "dotenv";
 import fetch from "./routes/user.route.js";
 import auth from "./routes/auth.route.js";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 dotenv.config();
 
 const port = 5000;
