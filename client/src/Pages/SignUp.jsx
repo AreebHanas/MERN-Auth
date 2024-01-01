@@ -1,11 +1,12 @@
 import { useState } from "react"
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import axios from"axios"
 
 export default function SignUp() {
   const [form,setForm] = useState({})
   const [loading,setLoading] = useState(false)
   const [error,setError] = useState(false)
+  const navigate = useNavigate()
 function onChangeHandler(e){
   setError(false)
   const name = e.target.id
@@ -21,10 +22,12 @@ function onChangeHandler(e){
 e.preventDefault();
 setLoading(true)
 try {
-  const response = await axios.post('http://localhost:5000/adduser/api',form)
-alert("Account registed")
+  const response = await axios.post('http://localhost:5000/api/adduser',form)
+  alert("Account registed");
+  
 setLoading(false)
 setError(false)
+navigate("/")
 } catch (error) {
   setLoading(false)
   setError(true)
