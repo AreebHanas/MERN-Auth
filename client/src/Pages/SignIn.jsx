@@ -1,14 +1,17 @@
 import { useState } from "react"
 import {Link,useNavigate} from "react-router-dom"
 import axios from"axios"
+import { signInStart,signInSuccess,signInFail } from "../Redux/User/UserSlice.js";
+import { useDispatch,useSelector } from "react-redux";
 
-export default function SignIp() {
+export default function SignIn() {
   const [form,setForm] = useState({})
-  const [loading,setLoading] = useState(false)
-  const [error,setError] = useState(false)
+  const {loading,error} = useSelector((state)=>state.user)
   const nevigate = useNavigate()
+  const dispatch = useDispatch()
+
 function onChangeHandler(e){
-  setError(false)
+  dispatch(signInFail(false))
   const name = e.target.id
   const value = e.target.value
   setForm((prv)=>{
@@ -20,17 +23,18 @@ function onChangeHandler(e){
 
  const onClickHandler = async (e)=>{
 e.preventDefault();
-setLoading(true)
 try {
-  const response = await axios.post('http://localhost:5000/api/validation',form)
-  alert("Signed In");
-  
-setLoading(false)
-setError(false)
+  dispatch(signInStart())
+  const response = await axios.post('http://localhost:5000/api/validation',form);
+  const data = response.json()
+if(form.success === false){
+  dispatch(signInFail(data))
+  return;
+}
+dispatch(signInSuccess(data))
 nevigate("/")
 } catch (error) {
-  setLoading(false)
-  setError(true)
+ dispatch(signInFail(error))
 }
 }
   return (
@@ -42,7 +46,7 @@ nevigate("/")
       <input type="password" placeholder='Password' id='password' className='bg-slate-100 rounded-lg p-3 ' 
       onChange={onChangeHandler}/>
       <div className="text-red-700">
-        {(error)?"Ooops invelid Email or Password!":null}
+        {(error)?(error.message ||"Ooops invelid Email or Password!"):null}
       </div>
       <button className='bg-slate-800 text-white p-3 rounded-lg uppercase hover:opacity-90 m-8 disabled:opacity-70'
       onClick={onClickHandler} disabled={loading}>{(loading)?"Loading...":"sign In"}</button>

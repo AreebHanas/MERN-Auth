@@ -1,4 +1,4 @@
-function errorhandler(message, status) {
+function errorhandler(status, message) {
   return {
     message,
     status,

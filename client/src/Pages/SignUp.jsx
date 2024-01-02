@@ -1,14 +1,18 @@
 import { useState } from "react"
 import {Link, useNavigate} from "react-router-dom"
 import axios from"axios"
+import { signInStart,signInSuccess,signInFail } from "../Redux/User/UserSlice.js";
+import { useDispatch,useSelector } from "react-redux";
 
 export default function SignUp() {
   const [form,setForm] = useState({})
-  const [loading,setLoading] = useState(false)
-  const [error,setError] = useState(false)
+  // const [loading,setLoading] = useState(false)
+  // const [error,setError] = useState(false)
+  const {loading,error} = useSelector((state)=>state.user)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 function onChangeHandler(e){
-  setError(false)
+  dispatch(signInFail(false))
   const name = e.target.id
   const value = e.target.value
   setForm((prv)=>{
@@ -20,17 +24,14 @@ function onChangeHandler(e){
 
  const onClickHandler = async (e)=>{
 e.preventDefault();
-setLoading(true)
+dispatch(signInStart())
 try {
   const response = await axios.post('http://localhost:5000/api/adduser',form)
   alert("Account registed");
-  
-setLoading(false)
-setError(false)
+  dispatch(signInSuccess())
 navigate("/")
 } catch (error) {
-  setLoading(false)
-  setError(true)
+  dispatch(signInFail(true))
 }
 }
   return (
