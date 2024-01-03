@@ -33,7 +33,7 @@ try {
   }
   alert("Account registed");
   dispatch(signInSuccess())
-navigate("/")
+navigate("/signin")
 } catch (error) {
   dispatch(signInFail(error))
 }

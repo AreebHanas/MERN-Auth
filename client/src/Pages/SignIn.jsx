@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {Link,useNavigate} from "react-router-dom"
 import axios from"axios"
 import { signInStart,signInSuccess,signInFail } from "../Redux/User/UserSlice.js";
@@ -26,12 +26,14 @@ e.preventDefault();
 try {
   dispatch(signInStart())
   const response = await axios.post('http://localhost:5000/api/validation',form);
-  const data = response
+  const data = response.data
 if(form.success === false){
   dispatch(signInFail(data))
   return;
 }
 dispatch(signInSuccess(data))
+localStorage.setItem('root',JSON.stringify(data))
+
 nevigate("/")
 } catch (error) {
  dispatch(signInFail(error))

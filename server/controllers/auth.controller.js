@@ -36,13 +36,14 @@ export const signin = async (req, res, next) => {
       return next(errorhandler(401, "Your Mail or Password is incorrect"));
     }
 
-    const token = jwt.sign({ id: validUser._id }, process.env.jwt_token);
+    const token = jwt.sign({ validUser }, process.env.jwt_token);
     const { password: hashPassword, ...prv } = validUser._doc;
-    const expire = new Date(Date.now() + 3600);
+    const expire = new Date(Date.now() + 3600 * 1000);
+
     res
       .cookie("access_token", token, { httpOnly: true, expires: expire })
       .status(200)
-      .json(prv);
+      .json(token);
   } catch (error) {
     next(error);
   }
