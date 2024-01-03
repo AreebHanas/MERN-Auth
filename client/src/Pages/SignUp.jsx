@@ -27,11 +27,15 @@ e.preventDefault();
 dispatch(signInStart())
 try {
   const response = await axios.post('http://localhost:5000/api/adduser',form)
+  if(form.success === false){
+    dispatch(signInFail())
+    return;
+  }
   alert("Account registed");
   dispatch(signInSuccess())
 navigate("/")
 } catch (error) {
-  dispatch(signInFail(true))
+  dispatch(signInFail(error))
 }
 }
   return (

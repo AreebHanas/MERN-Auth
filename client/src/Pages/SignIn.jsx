@@ -26,7 +26,7 @@ e.preventDefault();
 try {
   dispatch(signInStart())
   const response = await axios.post('http://localhost:5000/api/validation',form);
-  const data = response.json()
+  const data = response
 if(form.success === false){
   dispatch(signInFail(data))
   return;
@@ -46,7 +46,7 @@ nevigate("/")
       <input type="password" placeholder='Password' id='password' className='bg-slate-100 rounded-lg p-3 ' 
       onChange={onChangeHandler}/>
       <div className="text-red-700">
-        {(error)?(error.message ||"Ooops invelid Email or Password!"):null}
+        {(error)?("Invelid Email or Password!"):null}
       </div>
       <button className='bg-slate-800 text-white p-3 rounded-lg uppercase hover:opacity-90 m-8 disabled:opacity-70'
       onClick={onClickHandler} disabled={loading}>{(loading)?"Loading...":"sign In"}</button>
