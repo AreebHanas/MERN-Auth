@@ -1,7 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { signinRoute, signupRoute } from "./routes/auth.route.js";
+import {
+  googleauthRoute,
+  signinRoute,
+  signupRoute,
+} from "./routes/auth.route.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -25,6 +29,8 @@ const db = mongoose
 
 app.use("/api", signupRoute);
 app.use("/api", signinRoute);
+app.use("/api", googleauthRoute);
+// app.static("/uploads");
 
 app.use((err, req, res, next) => {
   const message = err.message || "Server error";

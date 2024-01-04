@@ -3,6 +3,7 @@ import {Link, useNavigate} from "react-router-dom"
 import axios from"axios"
 import { signInStart,signInSuccess,signInFail } from "../Redux/User/UserSlice.js";
 import { useDispatch,useSelector } from "react-redux";
+import OAuth from "../Components/OAuth.jsx";
 
 export default function SignUp() {
   const [form,setForm] = useState({})
@@ -33,7 +34,7 @@ try {
   }
   alert("Account registed");
   dispatch(signInSuccess())
-navigate("/signin")
+navigate("/")
 } catch (error) {
   dispatch(signInFail(error))
 }
@@ -51,12 +52,13 @@ navigate("/signin")
       <div className="text-red-700">
         {(error)?"Ooops somthing went wrong!":null}
       </div>
-      <button className='bg-slate-800 text-white p-3 rounded-lg uppercase hover:opacity-90 m-8 disabled:opacity-70'
+      <button className='bg-slate-800 text-white p-3 rounded-lg uppercase hover:opacity-90 m-2 disabled:opacity-70'
       onClick={onClickHandler} disabled={loading}>{(loading)?"Loading...":"sign up"}</button>
+      <OAuth/>
       </form>
-      <div className="flex gap-2">
+      <div className="flex gap-2 m-2">
         <p>Have an account?</p>
-        <Link to="/signin">
+        <Link to="/">
         <span className="text-blue-600 hover:opacity-90">Sign in</span>
         </Link>
       </div>
