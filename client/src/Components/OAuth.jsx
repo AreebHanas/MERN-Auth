@@ -3,6 +3,7 @@ import app from "../fireBase.js";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../Redux/User/UserSlice.js";
 import {useNavigate} from "react-router-dom"
+import { useEffect } from "react";
 // import axios from "axios";
 
 export default function OAuth() {
@@ -30,12 +31,22 @@ export default function OAuth() {
             
             // const res = await axios.post('http://localhost:5000/api/googleauth',body)
             const data = await res.json();
-            dispatch(signInSuccess(data.prv))
+            dispatch(signInSuccess(data))
+            localStorage.setItem('item',JSON.stringify(data))
             navigator('/home')
         } catch (error) {
             console.log('Google login error : ', error)
         }
+
     }
+
+    // useEffect(() => {
+    //     const items = JSON.parse(localStorage.getItem('item'));
+    //     // if(currentUser == null){
+    //           dispatch(signInSuccess(items))
+    //     // }
+    //   }, []);
+    
   return (
       <button type='button' onClick={gooleClickHandler} className='bg-red-700 p-3 rounded-lg text-white m-2 
       hover:opacity-80 uppercase disabled:opacity-70'>Continue with Google</button>

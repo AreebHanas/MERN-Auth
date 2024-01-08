@@ -66,14 +66,14 @@ export const googleAuth = async (req, res) => {
       const token = jwt.sign({ validUser }, process.env.jwt_token);
       const expire = new Date(Date.now() + 3600 * 1000);
       const { password, ...prv } = newUser._doc;
-      const pass = { prv, token };
+      const pass = { newUser, prv, token };
 
-      await newUser.save(); // Move this line here to save the new user
+      const save = await newUser.save(); // Move this line here to save the new user
 
       res
         .cookie("access_token", token, { httpOnly: true, expires: expire })
         .status(201) // Change the status code to 201
-        .json(pass);
+        .json(save);
     } else {
       const token = jwt.sign({ validUser }, process.env.jwt_token);
       const expire = new Date(Date.now() + 3600 * 1000);
@@ -83,7 +83,7 @@ export const googleAuth = async (req, res) => {
       res
         .cookie("access_token", token, { httpOnly: true, expires: expire })
         .status(200)
-        .json(pass);
+        .json(validUser);
     }
   } catch (error) {
     console.log(error.message);

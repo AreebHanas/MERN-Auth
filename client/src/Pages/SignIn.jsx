@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {Link,useNavigate} from "react-router-dom"
 import axios from"axios"
 import { signInStart,signInSuccess,signInFail } from "../Redux/User/UserSlice.js";
@@ -7,7 +7,7 @@ import OAuth from "../Components/OAuth.jsx";
 
 export default function SignIn() {
   const [form,setForm] = useState({})
-  const {loading,error} = useSelector((state)=>state.user)
+  const {loading,error,currentUser} = useSelector((state)=>state.user)
   const nevigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -34,13 +34,18 @@ if(form.success === false){
   return;
 }
 dispatch(signInSuccess(data))
-localStorage.setItem('root',JSON.stringify(token))
-
+const localdata = localStorage.setItem('item',JSON.stringify(data))
 nevigate("/home")
 } catch (error) {
  dispatch(signInFail(error))
 }
 }
+useEffect(() => {
+  const items = JSON.parse(localStorage.getItem('item'));
+  if(currentUser == null){
+        dispatch(signInSuccess(items))
+  }
+}, []);
   return (
     <div className='p-3 max-w-lg m-auto'>
       <h1 className='text-center text-3xl font-semibold m-7'>Sign In</h1>
