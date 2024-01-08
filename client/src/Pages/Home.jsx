@@ -4,14 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { signInSuccess } from '../Redux/User/UserSlice';
 
 export default function Home() {
-  const {currentUser} = useSelector((state)=>state.user)
-  const dispatch = useDispatch()
 
   useEffect(() => {
-    const items = JSON.parse(localStorage.getItem('item'));
-    if(currentUser == null){
-          dispatch(signInSuccess(items))
-    }
+    localStorage.setItem("lastRoute", location.pathname);
   }, []);
   return (
     <div>

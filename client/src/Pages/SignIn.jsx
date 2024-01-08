@@ -42,8 +42,10 @@ nevigate("/home")
 }
 useEffect(() => {
   const items = JSON.parse(localStorage.getItem('item'));
-  if(currentUser == null){
-        dispatch(signInSuccess(items))
+  if(items != null){
+        dispatch(signInSuccess(items));
+        const lastRoute = localStorage.getItem("lastRoute") ? localStorage.getItem("lastRoute") : '/home';
+        nevigate(lastRoute);
   }
 }, []);
   return (
