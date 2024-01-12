@@ -2,6 +2,9 @@ import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import errorhandler from "../utils/errorhandler.js";
 import jwt from "jsonwebtoken";
+import multer from "multer";
+
+const DIR = "./public";
 
 export const addUser = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -88,5 +91,70 @@ export const googleAuth = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ message: "error from catch" });
+  }
+};
+
+const storage = multer.diskStorage({
+  destination: (req, res, cb) => {
+    cb(null, DIR);
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(" ").join("-");
+    cb(null, Date.now() + "-" + fileName);
+  },
+});
+
+export const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+    }
+  },
+});
+
+export const update = async (req, res) => {
+  const url = req.protocol + "://" + req.get("host");
+  const userid = req.params.id;
+  let body;
+
+  body = {
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+  };
+  try {
+    if (body["password"]) {
+      const hashPassword = bcryptjs.hashSync(body["password"], 10);
+      body["password"] = hashPassword;
+    }
+
+    if (req.file) {
+      body["profilepicture"] = url + "/public/" + req.file.filename;
+    }
+
+    const update = await User.findByIdAndUpdate(userid, body, { new: true });
+    res.status(201).json({ update });
+    console.log("Updated");
+  } catch (error) {
+    console.log("updete error : ", error.message);
+  }
+};
+
+export const remove = async (req, res) => {
+  const delId = req.params.id;
+  try {
+    const del = await User.findByIdAndDelete(delId);
+    res.status(200).json({ message: "Accouont Deleted" });
+    console.log("Deleted");
+  } catch (error) {
+    console.log("Cant delete : ", error);
   }
 };

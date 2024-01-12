@@ -2,9 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import {
+  DeleteRoute,
   googleauthRoute,
   signinRoute,
   signupRoute,
+  updateRoute,
 } from "./routes/auth.route.js";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -30,6 +32,9 @@ const db = mongoose
 app.use("/api", signupRoute);
 app.use("/api", signinRoute);
 app.use("/api", googleauthRoute);
+app.use("/api", updateRoute);
+app.use("/public", express.static("public"));
+app.use("/api", DeleteRoute);
 // app.static("/uploads");
 
 app.use((err, req, res, next) => {
