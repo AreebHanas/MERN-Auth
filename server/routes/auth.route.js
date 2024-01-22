@@ -7,6 +7,7 @@ import {
   update,
   upload,
 } from "../controllers/auth.controller.js";
+import { scraper } from "../controllers/user.controller.js";
 import { verifyUser } from "../utils/verifyUser.js";
 
 const route = express.Router();
@@ -16,8 +17,12 @@ export const signinRoute = route.post("/validation", signin);
 export const googleauthRoute = route.post("/googleauth", googleAuth);
 export const updateRoute = route.patch(
   "/update/:id",
-  // verifyUser,
+  verifyUser,
   upload.single("profilepicture"),
   update
 );
-export const DeleteRoute = route.delete("/delete/:id", remove);
+export const DeleteRoute = route.delete("/delete/:id", verifyUser, remove);
+export const testRoute = route.post("/scrape", verifyUser, scraper);
+export const aboutRoute = route.post("/about", verifyUser, () => {
+  console.log("verify testing");
+});

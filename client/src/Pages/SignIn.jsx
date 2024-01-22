@@ -3,6 +3,7 @@ import {Link,useNavigate} from "react-router-dom"
 import axios from"axios"
 import { signInStart,signInSuccess,signInFail } from "../Redux/User/UserSlice.js";
 import { useDispatch,useSelector } from "react-redux";
+import { jwtDecode } from 'jwt-decode';
 import OAuth from "../Components/OAuth.jsx";
 
 export default function SignIn() {
@@ -27,23 +28,28 @@ e.preventDefault();
 try {
   dispatch(signInStart())
   const response = await axios.post('http://localhost:5000/api/validation',form);
-  const data = response.data.validUser
+  // const data = response.data.validUser
+  
   const token = response.data.token
 if(form.success === false){
   dispatch(signInFail(data))
   return;
 }
-dispatch(signInSuccess(data))
-const localdata = localStorage.setItem('item',JSON.stringify(data))
+
+const decoded = jwtDecode(token);
+
+dispatch(signInSuccess(decoded['user']))
+const localdata = localStorage.setItem('item',token)
 nevigate("/home")
 } catch (error) {
  dispatch(signInFail(error))
 }
 }
 useEffect(() => {
-  const items = JSON.parse(localStorage.getItem('item'));
+  const items = localStorage.getItem('item');
   if(items != null){
-        dispatch(signInSuccess(items));
+    const decoded = jwtDecode(items);
+        dispatch(signInSuccess(decoded['user']));
         const lastRoute = localStorage.getItem("lastRoute") ? localStorage.getItem("lastRoute") : '/home';
         nevigate(lastRoute);
   }

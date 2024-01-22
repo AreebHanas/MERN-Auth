@@ -2,7 +2,8 @@ import { useEffect,useRef,useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation,useNavigate } from "react-router-dom";
 import { signInSuccess,signInStart,signInFail,updateProfile } from '../Redux/User/UserSlice';
-import axios from 'axios'
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Profile() {
   const {currentUser,error,loading,update} = useSelector((state)=>state.user)
@@ -24,8 +25,12 @@ export default function Profile() {
 const deleteHandler =async (req,res)=>{
   if(currentUser){
     const id = currentUser._id;
-    const response = await axios.delete(`http://localhost:5000/api/delete/${id}`)
+    const token = localStorage.getItem('item');
+    const response = await axios.delete(`http://localhost:5000/api/delete/${id}`,{headers: {
+      'authorization': token}
+    })
     localStorage.removeItem('item')
+    dispatch(signInSuccess(null))
     navigate("/")
   } else{
     res.send('Can not delete')
@@ -52,21 +57,27 @@ const submitHandler = async (e)=>{
     // Handle the error or return early
     return;
   }
-  localStorage.removeItem('item')
   const postData = new FormData();
   Object.entries(updateForm).forEach(([key, value]) => {
-      postData.append(key, value)});
-      try {
-        dispatch(signInStart())
-        const response = await axios.patch(`http://localhost:5000/api/update/${currentUser._id}`,postData)
-        const data = response.data
+    postData.append(key, value)});
+    try {
+      dispatch(signInStart())
+      const token = localStorage.getItem('item')
+      localStorage.removeItem('item')
+        const response = await axios.patch(`http://localhost:5000/api/update/${currentUser._id}`,
+        postData,
+        {headers: {
+          'authorization': token}
+        })
+        const data = (await response.data).token
         dispatch(updateProfile(true))
         if(updateForm.success === false){
           dispatch(signInFail(data))
           return;
-        } 
-        dispatch(signInSuccess(data.update))
-        localStorage.setItem('item',JSON.stringify(data.update))
+        }
+        const decoded = jwtDecode(data) 
+        dispatch(signInSuccess(decoded['user']))
+        localStorage.setItem('item',data)
       } catch (error) {
         dispatch(signInFail(error))
       }
@@ -74,13 +85,13 @@ const submitHandler = async (e)=>{
 
 
   useEffect(() => {
-    const items = JSON.parse(localStorage.getItem('item'));
+    const items = localStorage.getItem('item'); 
   if(items != null){
-        dispatch(signInSuccess(items));
+    const decoded = jwtDecode(items);
+        dispatch(signInSuccess(decoded['user']));
   }
     localStorage.setItem("lastRoute", location.pathname);
   
-    // const items = JSON.parse(localStorage.getItem('update'));
   }, []);
   
   return (

@@ -39,14 +39,22 @@ export const signin = async (req, res, next) => {
       return next(errorhandler(401, "Your Mail or Password is incorrect"));
     }
 
-    const token = jwt.sign({ validUser }, process.env.jwt_token);
-    const { password: hashPassword, ...prv } = validUser._doc;
-    const expire = new Date(Date.now() + 3600 * 1000);
-    const pass = { validUser, token };
+    const { password: hashPassword, ...user } = validUser._doc;
+
+    const token = jwt.sign({ user }, process.env.jwt_token);
+    // const expire = new Date(Date.now() + 3600 * 1000);
+    // const pass = { token };
+    // res
+    //   .cookie("access_token", token, { httpOnly: true, expires: expire })
+    //   .status(200)
+    //   .json(pass);
+
     res
-      .cookie("access_token", token, { httpOnly: true, expires: expire })
+      // .cookie("access_token", token, { httpOnly: true, expires: expire })
       .status(200)
-      .json(pass);
+      .send({ error: false, token: token });
+
+    // console.log(req.cookie.access_token);
   } catch (error) {
     next(error);
   }
@@ -66,27 +74,36 @@ export const googleAuth = async (req, res) => {
         password: hashPassword,
         profilepicture: req.body.photo,
       });
-      const token = jwt.sign({ validUser }, process.env.jwt_token);
-      const expire = new Date(Date.now() + 3600 * 1000);
-      const { password, ...prv } = newUser._doc;
-      const pass = { newUser, prv, token };
+      const { password, ...user } = newUser._doc;
+      const token = jwt.sign({ user }, process.env.jwt_token);
+      // const expire = new Date(Date.now() + 3600 * 1000);
+      // const pass = { newUser, prv, token };
 
       const save = await newUser.save(); // Move this line here to save the new user
-
       res
-        .cookie("access_token", token, { httpOnly: true, expires: expire })
-        .status(201) // Change the status code to 201
-        .json(save);
-    } else {
-      const token = jwt.sign({ validUser }, process.env.jwt_token);
-      const expire = new Date(Date.now() + 3600 * 1000);
-      const { password: hashPassword, ...prv } = validUser._doc;
-      const pass = { prv, token };
-
-      res
-        .cookie("access_token", token, { httpOnly: true, expires: expire })
+        // .cookie("access_token", token, { httpOnly: true, expires: expire })
         .status(200)
-        .json(validUser);
+        .send({ error: false, token: token });
+      // res
+      //   .cookie("access_token", token, { httpOnly: true, expires: expire })
+      //   .status(201) // Change the status code to 201
+      //   .json(save);
+    } else {
+      const { password: hashPassword, ...user } = validUser._doc;
+      const token = jwt.sign({ user }, process.env.jwt_token);
+      // console.log(token);
+      // const expire = new Date(Date.now() + 3600 * 1000);
+      // const pass = { prv, token };
+
+      res
+        // .cookie("access_token", token, { httpOnly: true, expires: expire })
+        .status(200)
+        .send({ error: false, token: token });
+
+      // res
+      //   .cookie("access_token", token, { httpOnly: true, expires: expire })
+      //   .status(200)
+      //   .json(validUser);
     }
   } catch (error) {
     console.log(error.message);
@@ -141,7 +158,13 @@ export const update = async (req, res) => {
     }
 
     const update = await User.findByIdAndUpdate(userid, body, { new: true });
-    res.status(201).json({ update });
+    const { password: hashPassword, ...user } = update._doc;
+    const token = jwt.sign({ user }, process.env.jwt_token);
+    const expire = new Date(Date.now() + 3600 * 1000);
+    res.status(201).send({ error: false, token });
+    // .cookie("access_token", token, { httpOnly: true, expires: expire })
+    // console.log(token);
+    // console.log(user);
     console.log("Updated");
   } catch (error) {
     console.log("updete error : ", error.message);

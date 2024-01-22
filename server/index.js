@@ -3,17 +3,22 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import {
   DeleteRoute,
+  aboutRoute,
   googleauthRoute,
   signinRoute,
   signupRoute,
+  testRoute,
   updateRoute,
 } from "./routes/auth.route.js";
 import bodyParser from "body-parser";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+// import { verifyUser } from "./utils/verifyUser.js";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(cookieParser());
 dotenv.config();
 
 const port = 5000;
@@ -35,6 +40,8 @@ app.use("/api", googleauthRoute);
 app.use("/api", updateRoute);
 app.use("/public", express.static("public"));
 app.use("/api", DeleteRoute);
+app.use("/api", testRoute);
+app.use("/api", aboutRoute);
 // app.static("/uploads");
 
 app.use((err, req, res, next) => {

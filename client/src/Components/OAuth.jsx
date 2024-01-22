@@ -3,7 +3,8 @@ import app from "../fireBase.js";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../Redux/User/UserSlice.js";
 import {useNavigate} from "react-router-dom"
-import { useEffect } from "react";
+import { jwtDecode } from 'jwt-decode';
+// import { useEffect } from "react";
 // import axios from "axios";
 
 export default function OAuth() {
@@ -28,11 +29,22 @@ export default function OAuth() {
                 photo : result.user.photoURL
             })
         })
-            
+          console.log(res)  
             // const res = await axios.post('http://localhost:5000/api/googleauth',body)
-            const data = await res.json();
-            dispatch(signInSuccess(data))
-            localStorage.setItem('item',JSON.stringify(data))
+            const key = (await res.json()).token
+            // key.then((result) => {
+                // 'result' here is the resolved value of the Promise
+                // Assuming 'result' is an Object with a 'token' property
+                // const token = result.token;
+              
+                // Now you can use the 'token' variable as needed
+            //     console.log(token);
+            //   })
+            // console.log(key)
+            const decoded = jwtDecode(key);
+            // console.log(decoded['prv'])
+            dispatch(signInSuccess(decoded['user']))
+            localStorage.setItem('item',key)
             navigator('/home')
         } catch (error) {
             console.log('Google login error : ', error)
